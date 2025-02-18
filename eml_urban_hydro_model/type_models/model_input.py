@@ -1,5 +1,5 @@
 import pandera as pa
-from pandera import Series
+from pandera.typing import Series
 
 
 class ModelInput(pa.DataFrameModel):
