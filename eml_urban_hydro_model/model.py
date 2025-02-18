@@ -11,7 +11,7 @@ from .type_models.rho_parameters import RhoParameters
 
 @pa.check_types
 def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[ModelOutput]:
-    Qirr = (params.Qirr if params.Qirr is not None else params.omegaSoil * params.E_max / (100 * 86400),)
+    Qirr = params.Qirr if params.Qirr is not None else (params.omegaSoil * params.E_max / (100 * 86400))
 
     rain = df["precp"].copy().fillna(0)
     rain_lag = rain if params.lag == 0 else np.concatenate((np.zeros(params.lag), rain[: -params.lag]))
@@ -124,11 +124,9 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
 
         # ==============Soil reservoir==========#
         Z_soil = n * params.Z_root
-        rho_params = RhoParameters(
-            s=y_result[i], n=n, model_params=params, beta=beta, s_h=s_h, s_w=s_w, s_s=s_s, s_fc=s_fc, Ks=Ks
-        )
+        rho_params = RhoParameters(n=n, model_params=params, beta=beta, s_h=s_h, s_w=s_w, s_s=s_s, s_fc=s_fc, Ks=Ks)
         dydt[1] = (p + Qpolicy_irr[i] / params.omegaSoil) / (Z_soil / 100) - rho(
-            rho_params
+            y_result[i, 1], rho_params
         ) / 86400  # (1+(1-frac_rt2tk)*frac_rt2s*omegat/omegas)
 
         y_result[i + 1, 1] = y_result[i, 1] + dydt[1] * 60 * params.resolution

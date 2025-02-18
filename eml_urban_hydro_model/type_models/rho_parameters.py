@@ -6,7 +6,6 @@ from .model_parameters import ModelParameters
 class RhoParameters(BaseModel):
     """Container for rho function's parameters."""
 
-    s: float
     n: float
     model_params: ModelParameters
     beta: float
