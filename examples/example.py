@@ -1,7 +1,6 @@
 import os
 
 import eml_urban_hydro_model as uhm
-import numpy as np
 import pandas as pd
 
 
@@ -13,12 +12,8 @@ df = pd.read_pickle(filepath)
 
 # Catchment area
 
-# [mare foret paturage prairie gazon-fleuri pelouse grille-gazon gravier mineral-compacte]
-omegas_st = np.array([0, 0, 0, 2236.43, 1701.78, 0, 0, 0, 0])
-# [platform, surface-impermeable]
-omega0_st = np.array([5141.19, 6962.80])
-# [tank-like roof, roof]
-omegat_st = np.array([6225.88, 6035.83])
+area_params = uhm.AreaParameters(omegaSoil=3938, omegaRoad=12104, omegaRoof=12262)
+# area_params = uhm.area_params["swisstech01"]  # Alternatively get predefined area parameters
 
 
 # Soil characteristics
@@ -35,9 +30,7 @@ df_out = uhm.model_st(
         k=90,
         lag=0,
         soil_params=soil_params,
-        omegaSoil=sum(omegas_st),
-        omegaRoad=sum(omega0_st),
-        omegaRoof=sum(omegat_st),
+        area_params=area_params,
     ),
 )
 print(df_out)

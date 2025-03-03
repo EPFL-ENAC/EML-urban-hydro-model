@@ -11,7 +11,7 @@ from .type_models.rho_parameters import RhoParameters
 
 @pa.check_types
 def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[ModelOutput]:
-    Qirr = params.Qirr if params.Qirr is not None else (params.omegaSoil * params.E_max / (100 * 86400))
+    Qirr = params.Qirr if params.Qirr is not None else (params.area_params.omegaSoil * params.E_max / (100 * 86400))
 
     rain = df["precp"].copy().fillna(0)
     rain_lag = rain if params.lag == 0 else np.concatenate((np.zeros(params.lag), rain[: -params.lag]))
@@ -58,27 +58,29 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
 
         # ============ Qsoil ===============#
         if y_result[i, 1] >= s_fc:
-            Qsoil[i] = p * params.omegaSoil
+            Qsoil[i] = p * params.area_params.omegaSoil
         elif p > params.heavy:
-            Qsoil[i] = (p - params.heavy) * params.omegaSoil
+            Qsoil[i] = (p - params.heavy) * params.area_params.omegaSoil
         else:
             Qsoil[i] = 0
 
         # ============ Qroad ===============#
         Qroad[i] = (
-            params.k * y_result[i, 0] * params.omegaRoad / 86400
+            params.k * y_result[i, 0] * params.area_params.omegaRoad / 86400
         )  # Water flow at time point i the k should be different in roads and roofs
-        Vroad[i] = y_result[i, 0] * params.omegaRoad  # Water volume of Road reservoir at time point i
+        Vroad[i] = y_result[i, 0] * params.area_params.omegaRoad  # Water volume of Road reservoir at time point i
         # Qroad[i] = k * V_runoff[i]  # Turn k [/day] to k [/s]
 
         # ============ Qroof ===============#
-        Vroof[i] = y_result[i, 2] * (1 - params.frac_rt2tk) * params.omegaRoof
+        Vroof[i] = y_result[i, 2] * (1 - params.frac_rt2tk) * params.area_params.omegaRoof
         Qroof[i] = (
-            params.k * y_result[i, 2] * (1 - params.frac_rt2tk) * params.omegaRoof / 86400
+            params.k * y_result[i, 2] * (1 - params.frac_rt2tk) * params.area_params.omegaRoof / 86400
         )  # Water flow at time point i
 
         # ==============Road reservoir==========#
-        dydt[0] = pm + (Qsoil[i] - Qroad[i]) / params.omegaRoad  # roof, tank and roads use pm (modeled precipitation)
+        dydt[0] = (
+            pm + (Qsoil[i] - Qroad[i]) / params.area_params.omegaRoad
+        )  # roof, tank and roads use pm (modeled precipitation)
 
         y_result[i + 1, 0] = y_result[i, 0] + dydt[0] * 60 * params.resolution
         if y_result[i + 1, 0] < 0:
@@ -96,7 +98,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
 
         if params.frac_rt2tk != 0:
             # Calculate inflow and outflows
-            dydt[3] = pm * (params.frac_rt2tk * params.omegaRoof) - (Qtank[i] + Qpolicy_irr[i])
+            dydt[3] = pm * (params.frac_rt2tk * params.area_params.omegaRoof) - (Qtank[i] + Qpolicy_irr[i])
             y_result[i + 1, 3] = y_result[i, 3] - Vpolicy_flush[i] + dydt[3] * 60 * params.resolution
 
             # Ensure tank volume is non-negative
@@ -115,7 +117,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
 
         # ==============Roof reservoir==========#
         dydt[2] = (
-            pm - Qroof[i] / ((1 - params.frac_rt2tk) * params.omegaRoof) if params.frac_rt2tk != 1 else 0
+            pm - Qroof[i] / ((1 - params.frac_rt2tk) * params.area_params.omegaRoof) if params.frac_rt2tk != 1 else 0
         )  # roof, tank and roads use pm (modeled precipitation)
 
         y_result[i + 1, 2] = y_result[i, 2] + dydt[2] * 60 * params.resolution
@@ -125,7 +127,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
         # ==============Soil reservoir==========#
         Z_soil = n * params.Z_root
         rho_params = RhoParameters(n=n, model_params=params, beta=beta, s_h=s_h, s_w=s_w, s_s=s_s, s_fc=s_fc, Ks=Ks)
-        dydt[1] = (p + Qpolicy_irr[i] / params.omegaSoil) / (Z_soil / 100) - rho(
+        dydt[1] = (p + Qpolicy_irr[i] / params.area_params.omegaSoil) / (Z_soil / 100) - rho(
             y_result[i, 1], rho_params
         ) / 86400  # (1+(1-frac_rt2tk)*frac_rt2s*omegat/omegas)
 

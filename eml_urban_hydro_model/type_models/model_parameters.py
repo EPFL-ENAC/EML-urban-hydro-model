@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+from .area_parameters import AreaParameters
 from .soil_parameters import SoilParameters
 from ..soil_parameters import soil_params
 
@@ -17,9 +18,7 @@ class ModelParameters(BaseModel):
     soil_params: SoilParameters = Field(
         soil_params["loamy sand"], description='Soil parameters. Defaults to "loamy sand" parameters.'
     )
-    omegaSoil: float = Field(..., description="Catchment area for soil infiltration.")
-    omegaRoad: float = Field(..., description="Catchment area for road runoff.")
-    omegaRoof: float = Field(..., description="Catchment area for roof runoff.")
+    area_params: AreaParameters = Field(..., description="Catchment areas.")
     Vmax: float = Field(10, description="Maximum tank capacity (m³).")
     lag: int = Field(0, description="Time lag for precipitation effect.")
     resolution: int = Field(5, description="Time step resolution (minutes).")

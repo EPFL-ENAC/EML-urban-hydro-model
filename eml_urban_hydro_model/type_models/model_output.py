@@ -7,7 +7,6 @@ class ModelOutput(pa.DataFrameModel):
 
     time: Series[pa.DateTime] = pa.Field(description="Date and time.")
     Qout: Series[float] = pa.Field(description="Total outflow (m³/s).")
-    Qout: Series[float] = pa.Field(description="Total outflow (m³/s).")
     Qroad: Series[float] = pa.Field(description="Runoff from roads (m³/s).")
     Qroof: Series[float] = pa.Field(description="Runoff from roofs (m³/s).")
     Qsoil: Series[float] = pa.Field(description="Water infiltrated into the soil (m³/s).")
