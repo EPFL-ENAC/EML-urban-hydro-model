@@ -108,6 +108,12 @@ cd EML-urban-hydro-model
 make install
 ```
 
+Use [uv](https://github.com/astral-sh/uv) to add dependencies to the `pyproject.toml`:
+
+```bash
+uv add <package-name>
+```
+
 
 # ✅ Running tests
 
