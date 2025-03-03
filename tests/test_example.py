@@ -10,6 +10,7 @@ def test_example():
 
     filepath = os.path.join(os.path.dirname(__file__), "..", "examples", "pluvio.pkl")
     df = pd.read_pickle(filepath)
+    df = uhm.preprocess(df)
 
     area_params = uhm.area_params["swisstech01"]
     soil_params = uhm.soil_params["loamy sand"]

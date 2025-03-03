@@ -9,6 +9,10 @@ import pandas as pd
 filepath = os.path.join(os.path.dirname(__file__), "pluvio.pkl")
 df = pd.read_pickle(filepath)
 
+# Preprocess data
+
+df = uhm.preprocess(df)
+
 
 # Catchment area
 
