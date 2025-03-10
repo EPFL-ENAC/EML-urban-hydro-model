@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 
 from .area_parameters import AreaParameters
 from .soil_parameters import SoilParameters
+from ..vegetation_parameters import VegetationParameters
 from ..soil_parameters import soil_params
 
 
@@ -11,7 +12,9 @@ class ModelParameters(BaseModel):
     k: float = Field(90, description="Runoff coefficient for roads and roofs.")
     frac_rt2s: float = Field(0.5, description="Fraction of roof runoff directed to soil.")
     frac_rt2tk: float = Field(0.5, description="Fraction of roof runoff directed to tank.")
-    Z_root: float = Field(140, description="Root zone depth (mm).")
+    vegetation_params: VegetationParameters = Field(
+        VegetationParameters(Z_root=140), description="Vegetation parameters."
+    )
     E_max: float = Field(0.5, description="Maximum evapotranspiration rate (mm/day).")
     E_w: float = Field(0.0625, description="Minimum evapotranspiration rate (mm/day).")
     heavy: float = Field(55 / 600000, description="Threshold for intense rainfall (m/s).")

@@ -4,7 +4,7 @@ from .type_models.rho_parameters import RhoParameters
 
 
 def rho(s: np.ndarray, params: RhoParameters) -> np.ndarray | float:
-    Z_soil = params.n * params.model_params.Z_root  # grass root depth[cm]
+    Z_soil = params.n * params.model_params.vegetation_params.Z_root  # grass root depth[cm]
     eta_w = params.model_params.E_w / Z_soil  # normalized maximum evapotranspiration [-/day]
     eta = params.model_params.E_max / Z_soil
     m = (

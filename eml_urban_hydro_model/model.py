@@ -125,7 +125,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
             y_result[i + 1, 2] = 0
 
         # ==============Soil reservoir==========#
-        Z_soil = n * params.Z_root
+        Z_soil = n * params.vegetation_params.Z_root
         rho_params = RhoParameters(n=n, model_params=params, beta=beta, s_h=s_h, s_w=s_w, s_s=s_s, s_fc=s_fc, Ks=Ks)
         dydt[1] = (p + Qpolicy_irr[i] / params.area_params.omegaSoil) / (Z_soil / 100) - rho(
             y_result[i, 1], rho_params
