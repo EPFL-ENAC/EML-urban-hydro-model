@@ -9,7 +9,7 @@ from ..soil_parameters import soil_params
 class ModelParameters(BaseModel):
     """Container for model's parameters."""
 
-    k: float = Field(90, description="Runoff coefficient for roads and roofs.")
+    k: float = Field(84, description="Runoff coefficient for roads and roofs.")
     frac_rt2s: float = Field(0.5, description="Fraction of roof runoff directed to soil.")
     frac_rt2tk: float = Field(0.5, description="Fraction of roof runoff directed to tank.")
     vegetation_params: VegetationParameters = Field(

@@ -33,7 +33,7 @@ You can also provide the soil parameters and the area of the catchment.
 | `k`           | Runoff coefficient for roads and roofs                | `90` |
 | `frac_rt2s`   | Fraction of roof runoff directed to soil              | `0.5` |
 | `frac_rt2tk`  | Fraction of roof runoff directed to tank              | `0.5` |
-| `Z_root`      | Root zone depth (mm)                                  | `140` |
+| `Z_root`      | Root zone depth (cm)                                  | `140` |
 | `E_max`       | Maximum evapotranspiration rate (mm/day)              | `0.5` |
 | `E_w`         | Minimum evapotranspiration rate (mm/day)              | `0.0625` |
 | `heavy`       | Threshold for intense rainfall (m/s)                  | `55/600000` |
