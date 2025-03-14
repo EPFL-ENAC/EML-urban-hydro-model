@@ -14,7 +14,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
     Qirr = params.Qirr if params.Qirr is not None else (params.area_params.omegaSoil * params.E_max / (100 * 86400))
 
     rain = df["precp"].copy().fillna(0)
-    rain_lag = rain if params.lag == 0 else np.concatenate((np.zeros(params.lag), rain[: -params.lag]))
+    rain_lag = rain if params.lag == 0 else np.concatenate((np.zeros(params.lag), rain.iloc[: -params.lag]))
     Kc = df["time"].dt.month.apply(lambda x: 1 if x in [12, 1, 2, 9, 10, 11] else 2)
 
     # Soil parameters
@@ -50,7 +50,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
     lam = params.flushing_frequency / steps_per_hour  # Poisson mean
 
     for i in range(df.shape[0] - 1):
-        p = rain_lag[i] / (1000 * 60 * params.resolution)  # Convert from mm/5min to m/s
+        p = rain_lag.iloc[i] / (1000 * 60 * params.resolution)  # Convert from mm/5min to m/s
         pm = p  # Modeled precipitation
 
         # Sample from a Poisson distribution (flush count per time step)
@@ -88,8 +88,10 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
 
         # ==============Tank reservoir==========#
         Qpolicy_irr[i] = (
-            Kc[i] * Qirr
-            if (pm == 0 and y_result[i, 1] < s_fc - 0.1 and y_result[i, 3] >= Kc[i] * Qirr * params.resolution * 60)
+            Kc.iloc[i] * Qirr
+            if (
+                pm == 0 and y_result[i, 1] < s_fc - 0.1 and y_result[i, 3] >= Kc.iloc[i] * Qirr * params.resolution * 60
+            )
             else 0
         )
         Vpolicy_flush[i] = (

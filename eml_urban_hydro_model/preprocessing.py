@@ -19,8 +19,8 @@ def preprocess(
 
     for t in range(len(original_rainfall)):
         # First term
-        if original_rainfall["precp"][t] > params.ic:
-            direct_contribution = original_rainfall["precp"][t]
+        if original_rainfall["precp"].iloc[t] > params.ic:
+            direct_contribution = original_rainfall["precp"].iloc[t]
         else:
             direct_contribution = 0
 
@@ -28,7 +28,7 @@ def preprocess(
         memory_contribution = 0
         for tau in range(T_steps):
             if t - tau >= 0:  # Ensure valid index
-                past_rainfall = original_rainfall["precp"][t - tau]
+                past_rainfall = original_rainfall["precp"].iloc[t - tau]
                 if past_rainfall <= params.ic:  # Only consider rainfall below ic
                     memory_contribution += past_rainfall * alpha * (tau / T_steps) * np.exp((tau - T_steps) / T_steps)
 
