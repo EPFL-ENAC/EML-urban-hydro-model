@@ -17,6 +17,8 @@ df = uhm.preprocess(df)
 # Catchment area
 
 area_params = uhm.area_params["swisstech01"]
+# Set custom percentage of paved area
+area_params = uhm.set_percent_paved(area_params, percent_paved=85)
 # Alternatively define parameters manually
 # area_params = uhm.AreaParameters(omegaSoil=3938, omegaRoad=12104, omegaRoof=12262)
 
