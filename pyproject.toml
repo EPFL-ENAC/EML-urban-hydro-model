@@ -6,6 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "eml-urban-hydro-model"
 dynamic = ["version"]
 description = "Urban Hydrological Model"
+authors = [
+	{ name = "Yacine M'Hamdi", email = "yacine.mhamdi@epfl.ch" },
+	{ name = "Son Pham-Ba", email = "son.phamba@epfl.ch" },
+]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -17,13 +21,21 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "myst-parser>=4.0.1",
     "pre-commit>=4.1.0",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
+    "sphinx>=8.1.3",
+    "sphinx-press-theme>=0.9.1",
 ]
 test = [
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
+]
+doc = [
+    "myst-parser>=4.0.1",
+    "sphinx>=8.1.3",
+    "sphinx-press-theme>=0.9.1",
 ]
 
 [tool.setuptools_scm]
