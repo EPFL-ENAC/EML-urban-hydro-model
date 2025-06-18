@@ -39,6 +39,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
     Vpolicy_flush = np.zeros(df.shape[0])
 
     Qout = np.zeros(df.shape[0])
+    Qout_raw = np.zeros(df.shape[0])
     Qroad = np.zeros(df.shape[0])
     Qroof = np.zeros(df.shape[0])
     Qtank = np.zeros(df.shape[0])
@@ -140,10 +141,21 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
             y_result[i + 1, 1] = 1
 
         # ============ Qout ===============#
-        Qout[i] = Qroad[i] + Qroof[i] + Qtank[i] + Qsoil[i]  # Total outflow at time point i
+        Qout_raw[i] = Qroad[i] + Qroof[i] + Qtank[i] + Qsoil[i]  # Total outflow at time point i
+
+    # Weighed runoff coefficient (based on area proportions)
+    total_area = params.area_params.omegaSoil + params.area_params.omegaRoad + params.area_params.omegaRoof
+    weighted_runoff_coeff = (
+        (params.area_params.omegaSoil / total_area) * params.area_params.runoff_coeff_soil
+        + (params.area_params.omegaRoad / total_area) * params.area_params.runoff_coeff_roads
+        + (params.area_params.omegaRoof / total_area) * params.area_params.runoff_coeff_roofs
+    )
+    # Apply weighted runoff coefficient to Qout_raw
+    Qout = Qout_raw * weighted_runoff_coeff
 
     df_return = df[["time", "precp"]].copy()
     df_return["Qout"] = Qout
+    df_return["Qout_raw"] = Qout_raw
     df_return["Qroad"] = Qroad
     df_return["Qroof"] = Qroof
     df_return["Qsoil"] = Qsoil
