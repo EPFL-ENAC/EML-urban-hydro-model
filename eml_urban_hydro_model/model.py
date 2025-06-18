@@ -39,6 +39,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
     Vpolicy_flush = np.zeros(df.shape[0])
 
     Qout = np.zeros(df.shape[0])
+    Qout_raw = np.zeros(df.shape[0])
     Qroad = np.zeros(df.shape[0])
     Qroof = np.zeros(df.shape[0])
     Qtank = np.zeros(df.shape[0])
@@ -64,6 +65,10 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
         else:
             Qsoil[i] = 0
 
+        p_eff = (
+            p * params.area_params.omegaSoil - Qsoil[i]
+        ) / params.area_params.omegaSoil  # Precipitation that goes into the soil
+
         # ============ Qroad ===============#
         Qroad[i] = (
             params.k * y_result[i, 0] * params.area_params.omegaRoad / 86400
@@ -78,9 +83,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
         )  # Water flow at time point i
 
         # ==============Road reservoir==========#
-        dydt[0] = (
-            pm + (Qsoil[i] - Qroad[i]) / params.area_params.omegaRoad
-        )  # roof, tank and roads use pm (modeled precipitation)
+        dydt[0] = pm - Qroad[i] / params.area_params.omegaRoad  # roof, tank and roads use pm (modeled precipitation)
 
         y_result[i + 1, 0] = y_result[i, 0] + dydt[0] * 60 * params.resolution
         if y_result[i + 1, 0] < 0:
@@ -129,7 +132,7 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
         # ==============Soil reservoir==========#
         Z_soil = n * params.vegetation_params.Z_root
         rho_params = RhoParameters(n=n, model_params=params, beta=beta, s_h=s_h, s_w=s_w, s_s=s_s, s_fc=s_fc, Ks=Ks)
-        dydt[1] = (p + Qpolicy_irr[i] / params.area_params.omegaSoil) / (Z_soil / 100) - rho(
+        dydt[1] = (p_eff + Qpolicy_irr[i] / params.area_params.omegaSoil) / (Z_soil / 100) - rho(
             y_result[i, 1], rho_params
         ) / 86400  # (1+(1-frac_rt2tk)*frac_rt2s*omegat/omegas)
 
@@ -138,10 +141,21 @@ def model_st(df: DataFrame[ModelInput], params: ModelParameters) -> DataFrame[Mo
             y_result[i + 1, 1] = 1
 
         # ============ Qout ===============#
-        Qout[i] = Qroad[i] + Qroof[i] + Qtank[i]  # Total outflow at time point i
+        Qout_raw[i] = Qroad[i] + Qroof[i] + Qtank[i] + Qsoil[i]  # Total outflow at time point i
+
+    # Weighed runoff coefficient (based on area proportions)
+    total_area = params.area_params.omegaSoil + params.area_params.omegaRoad + params.area_params.omegaRoof
+    weighted_runoff_coeff = (
+        (params.area_params.omegaSoil / total_area) * params.area_params.runoff_coeff_soil
+        + (params.area_params.omegaRoad / total_area) * params.area_params.runoff_coeff_roads
+        + (params.area_params.omegaRoof / total_area) * params.area_params.runoff_coeff_roofs
+    )
+    # Apply weighted runoff coefficient to Qout_raw
+    Qout = Qout_raw * weighted_runoff_coeff
 
     df_return = df[["time", "precp"]].copy()
     df_return["Qout"] = Qout
+    df_return["Qout_raw"] = Qout_raw
     df_return["Qroad"] = Qroad
     df_return["Qroof"] = Qroof
     df_return["Qsoil"] = Qsoil

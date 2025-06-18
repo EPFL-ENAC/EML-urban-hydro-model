@@ -13,6 +13,7 @@ def test_example():
     df = uhm.preprocess(df)
 
     area_params = uhm.area_params["swisstech01"]
+    area_params = uhm.set_percent_paved(area_params, percent_paved=85)
     soil_params = uhm.soil_params["loamy sand"]
     vegetation_params = uhm.vegetation_params["grass"]
 

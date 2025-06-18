@@ -2,6 +2,8 @@
 
 _A Python library to simulate urban hydrological systems._
 
+[![Docs](https://github.com/EPFL-ENAC/EML-urban-hydro-model/actions/workflows/docs.yaml/badge.svg)](https://epfl-enac.github.io/EML-urban-hydro-model/)
+
 
 # 🔍 Overview
 

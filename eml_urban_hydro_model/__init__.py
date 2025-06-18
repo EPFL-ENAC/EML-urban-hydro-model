@@ -7,7 +7,7 @@ from .soil_parameters import soil_params
 from .vegetation_parameters import vegetation_params
 from .type_models.model_input import ModelInput
 from .type_models.model_output import ModelOutput
-from .type_models.area_parameters import AreaParameters
+from .type_models.area_parameters import AreaParameters, get_percent_paved, set_percent_paved
 from .type_models.preprocessing_parameters import PreprocessingParameters
 from .type_models.model_parameters import ModelParameters
 from .type_models.soil_parameters import SoilParameters
@@ -18,6 +18,8 @@ __all__ = [
     "area_params",
     "preprocess",
     "model_st",
+    "get_percent_paved",
+    "set_percent_paved",
     "soil_params",
     "vegetation_params",
     "AreaParameters",
