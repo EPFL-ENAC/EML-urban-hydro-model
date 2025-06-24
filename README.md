@@ -55,6 +55,7 @@ The function returns a **DataFrame** with the following computed hydrological va
 | Column        | Description                                      |
 |--------------|--------------------------------------------------|
 | `Qout`      | Total outflow (m³/s)                              |
+| `Qout_raw`  | Total outflow ignoring runoff coefficients (m³/s) |
 | `Qroad`     | Runoff from roads (m³/s)                          |
 | `Qroof`     | Runoff from roofs (m³/s)                          |
 | `Qsoil`     | Water infiltrated into the soil (m³/s)            |
