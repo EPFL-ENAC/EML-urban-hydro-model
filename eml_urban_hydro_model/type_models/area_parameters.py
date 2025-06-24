@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 class AreaParameters(BaseModel):
     """Container for area parameters."""
 
-    omegaSoil: float = Field(..., ge=0, description="Catchment area for soil infiltration (m²).")
+    omegaSoil: float = Field(..., gt=0, description="Catchment area for soil infiltration (m²).")
     omegaRoad: float = Field(..., ge=0, description="Catchment area for road runoff (m²).")
     omegaRoof: float = Field(..., ge=0, description="Catchment area for roof runoff (m²).")
     runoff_coeff_soil: float = Field(0.5, ge=0, le=1, description="Runoff coefficient for permeable soil area.")
